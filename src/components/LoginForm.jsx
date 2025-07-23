@@ -77,15 +77,15 @@ export default function LoginForm({ onLogin }) {
           <Tabs defaultValue="login" className="w-full" onValueChange={(value) => setIsLoginTab(value === 'login')}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login" className="flex items-center gap-2">
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-4 h-4 text-white" />
                 登录
               </TabsTrigger>
               <TabsTrigger value="register" className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="w-4 h-4 text-white" />
                 注册
               </TabsTrigger>
               <TabsTrigger value="admin-login" className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
+                <Shield className="w-4 h-4 text-white" />
                 管理员
               </TabsTrigger>
             </TabsList>
