@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
 import { Label } from '@/components/ui/label.jsx'
-import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.jsx'
 import { ArrowLeft, Send, AlertCircle } from 'lucide-react'
+import apiService from '../services/api'
 
 export default function CreatePost({ user, onBack, onPostCreated }) {
   const [title, setTitle] = useState('')
@@ -35,24 +36,10 @@ export default function CreatePost({ user, onBack, onPostCreated }) {
     setLoading(true)
 
     try {
-      // 模拟API调用
-      const newPost = {
-        id: Date.now(),
-        title: title.trim(),
-        content: content.trim(),
-        author: user.username,
-        likes_count: 0,
-        comments_count: 0,
-        created_at: new Date().toISOString(),
-        liked_by_user: false
-      }
-
-      // 这里应该调用实际的创建帖子API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟网络延迟
-
+      const newPost = await apiService.createPost(title.trim(), content.trim())
       onPostCreated(newPost)
     } catch (err) {
-      setError('发布失败，请稍后重试')
+      setError(err.message || '发布失败，请稍后重试')
     } finally {
       setLoading(false)
     }
@@ -78,6 +65,7 @@ export default function CreatePost({ user, onBack, onPostCreated }) {
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
+              <AlertTitle>错误</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -103,7 +91,7 @@ export default function CreatePost({ user, onBack, onPostCreated }) {
               <Label htmlFor="content">帖子内容 *</Label>
               <Textarea
                 id="content"
-                placeholder="请输入帖子内容（最多5000字符）"
+                placeholder="请输入帖子内容，支持Markdown语法（最多5000字符）"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="min-h-[300px]"

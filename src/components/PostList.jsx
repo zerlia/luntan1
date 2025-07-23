@@ -3,57 +3,44 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.j
 import { Button } from '@/components/ui/button.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Heart, MessageCircle, User, Calendar, Plus } from 'lucide-react'
+import apiService from '../services/api'
 
-export default function PostList({ user, onPostClick, onCreatePost }) {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: '欢迎来到我们的论坛！',
-      content: '这是第一个帖子，欢迎大家积极参与讨论。',
-      author: 'admin',
-      likes_count: 15,
-      comments_count: 8,
-      created_at: '2025-01-20 10:30:00',
-      liked_by_user: false
-    },
-    {
-      id: 2,
-      title: '关于论坛使用规则的说明',
-      content: '请大家遵守论坛规则，文明发言，共同维护良好的讨论环境。',
-      author: 'moderator',
-      likes_count: 12,
-      comments_count: 5,
-      created_at: '2025-01-20 14:15:00',
-      liked_by_user: true
-    },
-    {
-      id: 3,
-      title: '技术讨论：Cloudflare Workers的最佳实践',
-      content: '分享一些使用Cloudflare Workers开发的经验和技巧。',
-      author: 'developer',
-      likes_count: 23,
-      comments_count: 12,
-      created_at: '2025-01-21 09:45:00',
-      liked_by_user: false
+export default function PostList({ user, onPostClick, onCreatePost, onPostUpdated }) {
+  const [posts, setPosts] = useState([])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const fetchPosts = async () => {
+    try {
+      const response = await apiService.getPosts()
+      setPosts(response.posts)
+    } catch (error) {
+      console.error('Error fetching posts:', error)
     }
-  ])
+  }
 
   const handleLike = async (postId) => {
-    // 模拟点赞API调用
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const isLiked = post.liked_by_user
-        return {
-          ...post,
-          liked_by_user: !isLiked,
-          likes_count: isLiked ? post.likes_count - 1 : post.likes_count + 1
+    try {
+      const response = await apiService.togglePostLike(postId)
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            liked_by_user: response.liked,
+            likes_count: response.likes_count
+          }
         }
-      }
-      return post
-    }))
+        return post
+      }))
+    } catch (error) {
+      console.error('Error liking post:', error)
+    }
   }
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A'
     const date = new Date(dateString)
     return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
@@ -112,8 +99,14 @@ export default function PostList({ user, onPostClick, onCreatePost }) {
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    <span>{formatDate(post.created_at)}</span>
+                    <span>创建于 {formatDate(post.created_at)}</span>
                   </div>
+                  {post.last_modified_at && post.created_at !== post.last_modified_at && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>修改于 {formatDate(post.last_modified_at)}</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex items-center space-x-3">

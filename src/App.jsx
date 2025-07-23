@@ -1,14 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import LoginForm from './components/LoginForm.jsx'
 import PostList from './components/PostList.jsx'
 import PostDetail from './components/PostDetail.jsx'
 import CreatePost from './components/CreatePost.jsx'
+import apiService from './services/api.js'
 import './App.css'
 
 function App() {
   const [user, setUser] = useState(null)
   const [currentView, setCurrentView] = useState('list') // 'list', 'detail', 'create'
   const [selectedPost, setSelectedPost] = useState(null)
+  const [posts, setPosts] = useState([]) // State to hold posts
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      const response = await apiService.getPosts()
+      setPosts(response.posts)
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (user) {
+      fetchPosts()
+    }
+  }, [user, fetchPosts])
 
   const handleLogin = (userData) => {
     setUser(userData)
@@ -19,6 +36,7 @@ function App() {
     setUser(null)
     setCurrentView('list')
     setSelectedPost(null)
+    localStorage.removeItem('token') // Clear token on logout
   }
 
   const handlePostClick = (post) => {
@@ -31,11 +49,17 @@ function App() {
   }
 
   const handlePostCreated = (newPost) => {
-    // 这里可以更新帖子列表
+    fetchPosts() // Refresh post list after new post is created
     setCurrentView('list')
   }
 
+  const handlePostUpdated = (updatedPost) => {
+    setPosts(prevPosts => prevPosts.map(p => p.id === updatedPost.id ? updatedPost : p));
+    setSelectedPost(updatedPost); // Update the selected post in detail view
+  }
+
   const handleBackToList = () => {
+    fetchPosts(); // Refresh post list when returning to list view
     setCurrentView('list')
     setSelectedPost(null)
   }
@@ -57,13 +81,15 @@ function App() {
               论坛
             </h1>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">欢迎，{user.username}</span>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                退出登录
-              </button>
+              <span className="text-gray-600">欢迎，{user ? user.username : '访客'}</span>
+              {user && (
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  退出登录
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -74,8 +100,11 @@ function App() {
         {currentView === 'list' && (
           <PostList 
             user={user}
+            posts={posts} // Pass posts from App state
+            fetchPosts={fetchPosts} // Pass fetchPosts to PostList
             onPostClick={handlePostClick}
             onCreatePost={handleCreatePost}
+            onPostUpdated={handlePostUpdated} 
           />
         )}
         
@@ -84,6 +113,7 @@ function App() {
             post={selectedPost}
             user={user}
             onBack={handleBackToList}
+            onPostUpdated={handlePostUpdated} 
           />
         )}
         

@@ -1,96 +1,133 @@
-const API_BASE_URL = 'http://localhost:5000/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ".";
 
 class ApiService {
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`
+    const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // 包含cookies用於session
       ...options,
+    };
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
 
     try {
-      const response = await fetch(url, config)
-      const data = await response.json()
+      const response = await fetch(url, config);
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`)
+        throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
       }
 
-      return data
+      return data;
     } catch (error) {
-      console.error('API request failed:', error)
-      throw error
+      console.error("API request failed:", error);
+      throw error;
     }
   }
 
   // 認證相關
   async login(username, password) {
-    return this.request('/login', {
-      method: 'POST',
+    const data = await this.request("/auth/login", {
+      method: "POST",
       body: JSON.stringify({ username, password }),
-    })
+    });
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+    return data;
   }
 
   async register(username, password, inviteCode) {
-    return this.request('/register', {
-      method: 'POST',
-      body: JSON.stringify({ username, password, inviteCode }),
-    })
+    return this.request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ username, password, invite_code: inviteCode }),
+    });
+  }
+
+  async adminLogin(username, password) {
+    const data = await this.request("/auth/admin/login", {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    });
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+    return data;
   }
 
   async logout() {
-    return this.request('/logout', {
-      method: 'POST',
-    })
+    localStorage.removeItem("token");
+    // No backend call needed for logout with JWT
   }
 
   async getCurrentUser() {
-    return this.request('/me')
+    return this.request("/auth/me");
   }
 
   // 帖子相關
   async getPosts() {
-    return this.request('/posts')
+    return this.request("/posts");
   }
 
   async getPost(postId) {
-    return this.request(`/posts/${postId}`)
+    return this.request(`/posts/${postId}`);
   }
 
   async createPost(title, content) {
-    return this.request('/posts', {
-      method: 'POST',
+    return this.request("/posts", {
+      method: "POST",
       body: JSON.stringify({ title, content }),
-    })
+    });
+  }
+
+  async updatePost(postId, title, content) {
+    return this.request(`/posts/${postId}`, {
+      method: "PUT",
+      body: JSON.stringify({ title, content }),
+    });
+  }
+
+  async deletePost(postId) {
+    return this.request(`/posts/${postId}`, {
+      method: "DELETE",
+    });
   }
 
   async togglePostLike(postId) {
     return this.request(`/posts/${postId}/like`, {
-      method: 'POST',
-    })
+      method: "POST",
+    });
   }
 
   // 評論相關
   async getPostComments(postId) {
-    return this.request(`/posts/${postId}/comments`)
+    return this.request(`/posts/${postId}/comments`);
   }
 
   async createComment(postId, content) {
     return this.request(`/posts/${postId}/comments`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ content }),
-    })
+    });
   }
 
   async toggleCommentLike(commentId) {
     return this.request(`/comments/${commentId}/like`, {
-      method: 'POST',
-    })
+      method: "POST",
+    });
+  }
+
+  async deleteComment(commentId) {
+    return this.request(`/comments/${commentId}`, {
+      method: "DELETE",
+    });
   }
 }
 
-export default new ApiService()
+export default new ApiService();
 

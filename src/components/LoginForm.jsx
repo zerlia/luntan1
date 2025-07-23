@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Label } from '@/components/ui/label.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
-import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
-import { UserPlus, LogIn, AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.jsx'
+import { UserPlus, LogIn, AlertCircle, Shield } from 'lucide-react'
 import apiService from '../services/api.js'
 
 export default function LoginForm({ onLogin }) {
@@ -13,6 +13,7 @@ export default function LoginForm({ onLogin }) {
   const [registerData, setRegisterData] = useState({ username: '', password: '', inviteCode: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isLoginTab, setIsLoginTab] = useState(true)
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -29,6 +30,21 @@ export default function LoginForm({ onLogin }) {
     }
   }
 
+  const handleAdminLogin = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      const response = await apiService.adminLogin(loginData.username, loginData.password)
+      onLogin(response.user)
+    } catch (err) {
+      setError(err.message || '管理员登录失败，请检查用户名和密码')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
@@ -40,9 +56,11 @@ export default function LoginForm({ onLogin }) {
         registerData.password, 
         registerData.inviteCode
       )
-      onLogin(response.user)
+      // After successful registration, automatically log in the user
+      const loginResponse = await apiService.login(registerData.username, registerData.password);
+      onLogin(loginResponse.user);
     } catch (err) {
-      setError(err.message || '注册失败，请检查邀请码是否正确')
+      setError(err.message || '註冊失敗，請稍後重試')
     } finally {
       setLoading(false)
     }
@@ -56,8 +74,8 @@ export default function LoginForm({ onLogin }) {
           <CardDescription>请登录或注册以继续</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="login" className="w-full" onValueChange={(value) => setIsLoginTab(value === 'login')}>
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login" className="flex items-center gap-2">
                 <LogIn className="w-4 h-4" />
                 登录
@@ -66,11 +84,16 @@ export default function LoginForm({ onLogin }) {
                 <UserPlus className="w-4 h-4" />
                 注册
               </TabsTrigger>
+              <TabsTrigger value="admin-login" className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                管理员
+              </TabsTrigger>
             </TabsList>
 
             {error && (
               <Alert variant="destructive" className="mt-4">
                 <AlertCircle className="h-4 w-4" />
+                <AlertTitle>错误</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -142,6 +165,36 @@ export default function LoginForm({ onLogin }) {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? '注册中...' : '注册'}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="admin-login">
+              <form onSubmit={handleAdminLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="admin-username">管理员群昵称</Label>
+                  <Input
+                    id="admin-username"
+                    type="text"
+                    placeholder="请输入管理员群昵称"
+                    value={loginData.username}
+                    onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="admin-password">管理员密码</Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    placeholder="请输入管理员密码"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? '登录中...' : '管理员登录'}
                 </Button>
               </form>
             </TabsContent>
