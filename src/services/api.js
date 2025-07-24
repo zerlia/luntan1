@@ -32,7 +32,7 @@ class ApiService {
 
   // 認證相關
   async login(username, password) {
-    const data = await this.request("/api/auth/login", {
+    const data = await this.request("/auth/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
@@ -43,14 +43,14 @@ class ApiService {
   }
 
   async register(username, password, inviteCode) {
-    return this.request("/api/auth/register", {
+    return this.request("/auth/register", {
       method: "POST",
       body: JSON.stringify({ username, password, invite_code: inviteCode }),
     });
   }
 
   async adminLogin(username, password) {
-    const data = await this.request("/api/auth/admin/login", {
+    const data = await this.request("/auth/admin/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
@@ -66,64 +66,64 @@ class ApiService {
   }
 
   async getCurrentUser() {
-    return this.request("/api/auth/me");
+    return this.request("/auth/me");
   }
 
   // 帖子相關
   async getPosts() {
-    return this.request("/api/posts");
+    return this.request("/posts");
   }
 
   async getPost(postId) {
-    return this.request(`/api/posts/${postId}`);
+    return this.request(`/posts/${postId}`);
   }
 
   async createPost(title, content) {
-    return this.request("/api/posts", {
+    return this.request("/posts", {
       method: "POST",
       body: JSON.stringify({ title, content }),
     });
   }
 
   async updatePost(postId, title, content) {
-    return this.request(`/api/posts/${postId}`, {
+    return this.request(`/posts/${postId}`, {
       method: "PUT",
       body: JSON.stringify({ title, content }),
     });
   }
 
   async deletePost(postId) {
-    return this.request(`/api/posts/${postId}`, {
+    return this.request(`/posts/${postId}`, {
       method: "DELETE",
     });
   }
 
   async togglePostLike(postId) {
-    return this.request(`/api/posts/${postId}/like`, {
+    return this.request(`/posts/${postId}/like`, {
       method: "POST",
     });
   }
 
   // 評論相關
   async getPostComments(postId) {
-    return this.request(`/api/posts/${postId}/comments`);
+    return this.request(`/posts/${postId}/comments`);
   }
 
   async createComment(postId, content) {
-    return this.request(`/api/posts/${postId}/comments`, {
+    return this.request(`/posts/${postId}/comments`, {
       method: "POST",
       body: JSON.stringify({ content }),
     });
   }
 
   async toggleCommentLike(commentId) {
-    return this.request(`/api/comments/${commentId}/like`, {
+    return this.request(`/comments/${commentId}/like`, {
       method: "POST",
     });
   }
 
   async deleteComment(commentId) {
-    return this.request(`/api/comments/${commentId}`, {
+    return this.request(`/comments/${commentId}`, {
       method: "DELETE",
     });
   }
