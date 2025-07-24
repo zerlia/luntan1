@@ -1,9 +1,8 @@
-const API_BASE_URL = "https://forum-backend.061729wzl.workers.dev";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ".";
 
 class ApiService {
   async request(endpoint, options = {}) {
-    const cleanEndpoint = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint;
-    const url = `${API_BASE_URL}/${cleanEndpoint}`;
+    const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -131,5 +130,4 @@ class ApiService {
 }
 
 export default new ApiService();
-
 
