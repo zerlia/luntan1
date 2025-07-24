@@ -77,15 +77,15 @@ export default function LoginForm({ onLogin }) {
           <Tabs defaultValue="login" className="w-full" onValueChange={(value) => setIsLoginTab(value === 'login')}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login" className="flex items-center gap-2">
-                <LogIn className="w-4 h-4 text-white" />
+                <LogIn className="w-4 h-4" />
                 登录
               </TabsTrigger>
               <TabsTrigger value="register" className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-white" />
+                <UserPlus className="w-4 h-4" />
                 注册
               </TabsTrigger>
               <TabsTrigger value="admin-login" className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-white" />
+                <Shield className="w-4 h-4" />
                 管理员
               </TabsTrigger>
             </TabsList>
@@ -122,7 +122,7 @@ export default function LoginForm({ onLogin }) {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full text-white" disabled={loading}>
                   {loading ? '登录中...' : '登录'}
                 </Button>
               </form>
@@ -163,7 +163,7 @@ export default function LoginForm({ onLogin }) {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full text-white" disabled={loading}>
                   {loading ? '注册中...' : '注册'}
                 </Button>
               </form>
@@ -193,7 +193,7 @@ export default function LoginForm({ onLogin }) {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full text-white" disabled={loading}>
                   {loading ? '登录中...' : '管理员登录'}
                 </Button>
               </form>
