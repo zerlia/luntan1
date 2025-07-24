@@ -32,7 +32,7 @@ class ApiService {
 
   // 認證相關
   async login(username, password) {
-    const data = await this.request("/auth/login", {
+    const data = await this.request("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
@@ -43,14 +43,14 @@ class ApiService {
   }
 
   async register(username, password, inviteCode) {
-    return this.request("/auth/register", {
+    return this.request("/api/auth/register", {
       method: "POST",
       body: JSON.stringify({ username, password, invite_code: inviteCode }),
     });
   }
 
   async adminLogin(username, password) {
-    const data = await this.request("/auth/admin/login", {
+    const data = await this.request("/api/auth/admin/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
@@ -66,7 +66,7 @@ class ApiService {
   }
 
   async getCurrentUser() {
-    return this.request("/auth/me");
+    return this.request("/api/auth/me");
   }
 
   // 帖子相關
