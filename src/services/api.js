@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ".";
+const API_BASE_URL = "https://forum-backend.061729wzl.workers.dev";
 
 class ApiService {
   async request(endpoint, options = {}) {
