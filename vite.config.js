@@ -11,17 +11,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
-
-
-
-export default defineConfig({
-  plugins: [react(),tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
   server: {
     proxy: {
       "/api": {
@@ -32,3 +21,5 @@ export default defineConfig({
     },
   },
 });
+
+
