@@ -21,19 +21,13 @@ class ApiService {
       // 改進的錯誤處理
       if (!response.ok) {
         let errorMessage;
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          try {
-            const data = await response.json();
-            errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-          } catch (jsonError) {
-            errorMessage = `Failed to parse JSON error response: ${jsonError.message}`;
-          }
-        } else {
-          errorMessage = await response.text();
-          if (!errorMessage) {
-            errorMessage = `HTTP error! status: ${response.status}`;
-          }
+        try {
+          const data = await response.json();
+          errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+        } catch (jsonError) {
+          // 如果響應不是JSON格式，嘗試讀取為文本
+          const textData = await response.text();
+          errorMessage = textData || `HTTP error! status: ${response.status}`;
         }
         throw new Error(errorMessage);
       }
