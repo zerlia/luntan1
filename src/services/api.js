@@ -99,35 +99,35 @@ class ApiService {
 
   // 帖子相關
   async getPosts() {
-    return this.request("/posts");
+    return this.request("/api/posts");
   }
 
   async getPost(postId) {
-    return this.request(`/posts/${postId}`);
+    return this.request(`/api/posts/${postId}`);
   }
 
   async createPost(title, content) {
-    return this.request("/posts", {
+    return this.request("/api/posts", {
       method: "POST",
       body: JSON.stringify({ title, content }),
     });
   }
 
   async updatePost(postId, title, content) {
-    return this.request(`/posts/${postId}`, {
+    return this.request(`/api/posts/${postId}`, {
       method: "PUT",
       body: JSON.stringify({ title, content }),
     });
   }
 
   async deletePost(postId) {
-    return this.request(`/posts/${postId}`, {
+    return this.request(`/api/posts/${postId}`, {
       method: "DELETE",
     });
   }
 
   async togglePostLike(postId) {
-    return this.request(`/posts/${postId}/like`, {
+    return this.request(`/api/posts/${postId}/like`, {
       method: "POST",
     });
   }
