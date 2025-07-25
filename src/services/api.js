@@ -66,6 +66,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
+      // For admin login, the backend only returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // For now, we'll return a dummy user object with admin role.
+      // In a real application, you might fetch user details using the token.
+      return { user: { username: username, role: 'admin', token: data.token } };
     }
     return data;
   }
