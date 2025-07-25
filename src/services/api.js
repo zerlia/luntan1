@@ -134,24 +134,24 @@ class ApiService {
 
   // 評論相關
   async getPostComments(postId) {
-    return this.request(`/posts/${postId}/comments`);
+    return this.request(`/api/posts/${postId}/comments`);
   }
 
   async createComment(postId, content) {
-    return this.request(`/posts/${postId}/comments`, {
+    return this.request(`/api/posts/${postId}/comments`, {
       method: "POST",
       body: JSON.stringify({ content }),
     });
   }
 
   async toggleCommentLike(commentId) {
-    return this.request(`/comments/${commentId}/like`, {
+    return this.request(`/api/comments/${commentId}/like`, {
       method: "POST",
     });
   }
 
   async deleteComment(commentId) {
-    return this.request(`/comments/${commentId}`, {
+    return this.request(`/api/comments/${commentId}`, {
       method: "DELETE",
     });
   }
