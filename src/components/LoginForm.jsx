@@ -51,7 +51,7 @@ export default function LoginForm({ onLogin }) {
     setLoading(true)
 
     try {
-      const response = await apiService.register(
+      await apiService.register(
         registerData.username, 
         registerData.password, 
         registerData.inviteCode
@@ -60,11 +60,12 @@ export default function LoginForm({ onLogin }) {
       const loginResponse = await apiService.login(registerData.username, registerData.password);
       onLogin(loginResponse.user);
     } catch (err) {
-      setError(err.message || '註冊失敗，請稍後重試')
+      // Ensure error message from backend is displayed
+      setError(err.message || '註冊失敗，請稍後重試');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -204,4 +205,5 @@ export default function LoginForm({ onLogin }) {
     </div>
   )
 }
+
 

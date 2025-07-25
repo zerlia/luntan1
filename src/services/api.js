@@ -48,6 +48,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
+      // For user login, the backend returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // Assuming the backend /me endpoint returns user details.
+      // For now, we'll return a dummy user object with the username and token.
+      return { user: { username: username, token: data.token } };
     }
     return data;
   }
@@ -145,6 +150,5 @@ class ApiService {
 }
 
 export default new ApiService();
-
 
 
