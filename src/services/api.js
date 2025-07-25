@@ -21,19 +21,27 @@ class ApiService {
       // 改進的錯誤處理
       if (!response.ok) {
         let errorMessage;
-        try {
-          const data = await response.json();
-          errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-        } catch (jsonError) {
-          // 如果響應不是JSON格式，嘗試讀取為文本
-          const textData = await response.text();
-          errorMessage = textData || `HTTP error! status: ${response.status}`;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+        } else {
+          errorMessage = await response.text();
+          if (!errorMessage) {
+            errorMessage = `HTTP error! status: ${response.status}`;
+          }
         }
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      return data;
+      // 只有在響應成功且有內容時才嘗試解析JSON
+      const contentType = response.headers.get("content-type");
+      if (response.status !== 204 && contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        return data;
+      } else {
+        return {}; // 或返回 null，取決於後端對204或其他無內容響應的處理
+      }
     } catch (error) {
       console.error("API request failed:", error);
       throw error;
