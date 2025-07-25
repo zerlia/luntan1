@@ -120,7 +120,7 @@ class ApiService {
   }
 
   async createComment(postId, content) {
-    return this.request(`/posts/${postId}/comments", {
+    return this.request(`/posts/${postId}/comments`, {
       method: "POST",
       body: JSON.stringify({ content }),
     });
