@@ -17,12 +17,22 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
-
+      
+      // 改進的錯誤處理
       if (!response.ok) {
-        throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
+        let errorMessage;
+        try {
+          const data = await response.json();
+          errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+        } catch (jsonError) {
+          // 如果響應不是JSON格式，嘗試讀取為文本
+          const textData = await response.text();
+          errorMessage = textData || `HTTP error! status: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error("API request failed:", error);
@@ -110,7 +120,7 @@ class ApiService {
   }
 
   async createComment(postId, content) {
-    return this.request(`/posts/${postId}/comments`, {
+    return this.request(`/posts/${postId}/comments", {
       method: "POST",
       body: JSON.stringify({ content }),
     });
@@ -130,4 +140,6 @@ class ApiService {
 }
 
 export default new ApiService();
+
+
 
