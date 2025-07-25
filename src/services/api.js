@@ -57,7 +57,7 @@ class ApiService {
       // For user login, the backend returns a token. 
       // We need to return a user object for onLogin to work correctly.
       // Assuming the backend /me endpoint returns user details.
-      // For now, we\'ll return a dummy user object with the username and token.
+      // For now, we'll return a dummy user object with the username and token.
       return { user: { username: username, token: data.token } };
     }
     return data;
@@ -79,9 +79,9 @@ class ApiService {
       localStorage.setItem("token", data.token);
       // For admin login, the backend only returns a token. 
       // We need to return a user object for onLogin to work correctly.
-      // For now, we\'ll return a dummy user object with admin role.
+      // For now, we'll return a dummy user object with admin role.
       // In a real application, you might fetch user details using the token.
-      return { user: { username: username, role: \'admin\', token: data.token } };
+      return { user: { username: username, role: 'admin', token: data.token } };
     }
     return data;
   }
@@ -156,7 +156,5 @@ class ApiService {
 }
 
 export default new ApiService();
-
-
 
 
