@@ -21,13 +21,19 @@ class ApiService {
       // 改進的錯誤處理
       if (!response.ok) {
         let errorMessage;
-        try {
-          const data = await response.json();
-          errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-        } catch (jsonError) {
-          // 如果響應不是JSON格式，嘗試讀取為文本
-          const textData = await response.text();
-          errorMessage = textData || `HTTP error! status: ${response.status}`;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            const data = await response.json();
+            errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+          } catch (jsonError) {
+            errorMessage = `Failed to parse JSON error response: ${jsonError.message}`;
+          }
+        } else {
+          errorMessage = await response.text();
+          if (!errorMessage) {
+            errorMessage = `HTTP error! status: ${response.status}`;
+          }
         }
         throw new Error(errorMessage);
       }
@@ -51,7 +57,7 @@ class ApiService {
       // For user login, the backend returns a token. 
       // We need to return a user object for onLogin to work correctly.
       // Assuming the backend /me endpoint returns user details.
-      // For now, we'll return a dummy user object with the username and token.
+      // For now, we\'ll return a dummy user object with the username and token.
       return { user: { username: username, token: data.token } };
     }
     return data;
@@ -73,9 +79,9 @@ class ApiService {
       localStorage.setItem("token", data.token);
       // For admin login, the backend only returns a token. 
       // We need to return a user object for onLogin to work correctly.
-      // For now, we'll return a dummy user object with admin role.
+      // For now, we\'ll return a dummy user object with admin role.
       // In a real application, you might fetch user details using the token.
-      return { user: { username: username, role: 'admin', token: data.token } };
+      return { user: { username: username, role: \'admin\', token: data.token } };
     }
     return data;
   }
@@ -150,5 +156,7 @@ class ApiService {
 }
 
 export default new ApiService();
+
+
 
 
