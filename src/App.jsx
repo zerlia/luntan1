@@ -27,10 +27,9 @@ function App() {
     }
   }, [user, fetchPosts])
 
-  const handleLogin = (userData, token) => {
+  const handleLogin = (userData) => {
     setUser(userData)
-    localStorage.setItem("token", token); // Save token to localStorage
-    setCurrentView("list")
+    setCurrentView('list')
   }
 
   const handleLogout = () => {
