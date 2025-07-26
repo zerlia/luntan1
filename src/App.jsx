@@ -11,6 +11,7 @@ function App() {
   const [currentView, setCurrentView] = useState('list') // 'list', 'detail', 'create'
   const [selectedPost, setSelectedPost] = useState(null)
   const [posts, setPosts] = useState([]) // State to hold posts
+  const [isLoading, setIsLoading] = useState(true) // 添加加載狀態
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -20,6 +21,26 @@ function App() {
       console.error('Error fetching posts:', error)
     }
   }, [])
+
+  // 自動登錄檢查
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && !user) {
+      // 如果有token但沒有用戶信息，嘗試獲取用戶信息
+      apiService.getCurrentUser()
+        .then(response => {
+          setUser(response.user);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error('Auto login failed:', error);
+          localStorage.removeItem('token');
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -64,6 +85,18 @@ function App() {
     setSelectedPost(null)
   }
 
+  // 顯示加載狀態
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">正在加載...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     return <LoginForm onLogin={handleLogin} />
   }
@@ -81,7 +114,14 @@ function App() {
               论坛
             </h1>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">欢迎，{user ? user.username : '访客'}</span>
+              <span className="text-gray-600">
+                欢迎，{user ? user.username : '访客'}
+                {user && user.role === 'admin' && (
+                  <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                    管理员
+                  </span>
+                )}
+              </span>
               {user && (
                 <button
                   onClick={handleLogout}
@@ -130,3 +170,4 @@ function App() {
 }
 
 export default App
+
