@@ -56,15 +56,28 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 登錄成功後立即獲取完整用戶信息
+      // 嘗試獲取完整用戶信息，但如果失敗不影響登錄
       try {
         const userInfo = await this.getCurrentUser();
         return { user: userInfo.user };
       } catch (error) {
-        console.error("Failed to get user info after login:", error);
-        // 如果獲取用戶信息失敗，清除token並拋出錯誤
-        localStorage.removeItem("token");
-        throw new Error("登錄後獲取用戶信息失敗");
+        console.warn("Failed to get user info after login, using basic user data:", error);
+        // 如果獲取用戶信息失敗，返回基本用戶信息
+        // 這裡我們需要從JWT token中解析用戶信息
+        try {
+          const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+          return { 
+            user: { 
+              id: tokenPayload.id,
+              username: tokenPayload.username || username,
+              role: tokenPayload.role || 'user'
+            } 
+          };
+        } catch (parseError) {
+          console.error("Failed to parse token:", parseError);
+          // 最後的備用方案
+          return { user: { username: username, token: data.token } };
+        }
       }
     }
     return data;
@@ -84,14 +97,27 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 管理員登錄後也獲取完整用戶信息
+      // 嘗試獲取完整用戶信息，但如果失敗不影響登錄
       try {
         const userInfo = await this.getCurrentUser();
         return { user: userInfo.user };
       } catch (error) {
-        console.error("Failed to get admin info after login:", error);
-        localStorage.removeItem("token");
-        throw new Error("管理員登錄後獲取用戶信息失敗");
+        console.warn("Failed to get admin info after login, using basic user data:", error);
+        // 如果獲取用戶信息失敗，返回基本用戶信息
+        try {
+          const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+          return { 
+            user: { 
+              id: tokenPayload.id,
+              username: tokenPayload.username || username,
+              role: tokenPayload.role || 'admin'
+            } 
+          };
+        } catch (parseError) {
+          console.error("Failed to parse admin token:", parseError);
+          // 最後的備用方案
+          return { user: { username: username, role: 'admin', token: data.token } };
+        }
       }
     }
     return data;
