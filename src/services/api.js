@@ -56,29 +56,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 嘗試獲取完整用戶信息，但如果失敗不影響登錄
-      try {
-        const userInfo = await this.getCurrentUser();
-        return { user: userInfo.user };
-      } catch (error) {
-        console.warn("Failed to get user info after login, using basic user data:", error);
-        // 如果獲取用戶信息失敗，返回基本用戶信息
-        // 這裡我們需要從JWT token中解析用戶信息
-        try {
-          const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
-          return { 
-            user: { 
-              id: tokenPayload.id,
-              username: tokenPayload.username || username,
-              role: tokenPayload.role || 'user'
-            } 
-          };
-        } catch (parseError) {
-          console.error("Failed to parse token:", parseError);
-          // 最後的備用方案
-          return { user: { username: username, token: data.token } };
-        }
-      }
+      // For user login, the backend returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // Assuming the backend /me endpoint returns user details.
+      // For now, we'll return a dummy user object with the username and token.
+      return { user: { username: username, token: data.token } };
     }
     return data;
   }
@@ -97,28 +79,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 嘗試獲取完整用戶信息，但如果失敗不影響登錄
-      try {
-        const userInfo = await this.getCurrentUser();
-        return { user: userInfo.user };
-      } catch (error) {
-        console.warn("Failed to get admin info after login, using basic user data:", error);
-        // 如果獲取用戶信息失敗，返回基本用戶信息
-        try {
-          const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
-          return { 
-            user: { 
-              id: tokenPayload.id,
-              username: tokenPayload.username || username,
-              role: tokenPayload.role || 'admin'
-            } 
-          };
-        } catch (parseError) {
-          console.error("Failed to parse admin token:", parseError);
-          // 最後的備用方案
-          return { user: { username: username, role: 'admin', token: data.token } };
-        }
-      }
+      // For admin login, the backend only returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // For now, we'll return a dummy user object with admin role.
+      // In a real application, you might fetch user details using the token.
+      return { user: { username: username, role: 'admin', token: data.token } };
     }
     return data;
   }
@@ -193,4 +158,5 @@ class ApiService {
 }
 
 export default new ApiService();
+
 
