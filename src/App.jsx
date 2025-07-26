@@ -1,16 +1,34 @@
+// 修復後的 App.jsx 文件中的關鍵部分
+
 import { useState, useEffect, useCallback } from 'react'
-import LoginForm from './components/LoginForm.jsx'
-import PostList from './components/PostList.jsx'
-import PostDetail from './components/PostDetail.jsx'
-import CreatePost from './components/CreatePost.jsx'
-import apiService from './services/api.js'
-import './App.css'
+// ... 其他導入
 
 function App() {
   const [user, setUser] = useState(null)
-  const [currentView, setCurrentView] = useState('list') // 'list', 'detail', 'create'
+  const [currentView, setCurrentView] = useState('list')
   const [selectedPost, setSelectedPost] = useState(null)
-  const [posts, setPosts] = useState([]) // State to hold posts
+  const [posts, setPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(true) // 添加加載狀態
+
+  // 添加：初始化時檢查並獲取用戶信息
+  useEffect(() => {
+    const initializeUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token && !user) {
+        try {
+          const userInfo = await apiService.getCurrentUser();
+          setUser(userInfo.user);
+        } catch (error) {
+          console.error('Failed to get user info on init:', error);
+          // Token 可能已過期，清除它
+          localStorage.removeItem('token');
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initializeUser();
+  }, [user]);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -32,101 +50,23 @@ function App() {
     setCurrentView('list')
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    setCurrentView('list')
-    setSelectedPost(null)
-    localStorage.removeItem('token') // Clear token on logout
-  }
+  // ... 其他方法保持不變
 
-  const handlePostClick = (post) => {
-    setSelectedPost(post)
-    setCurrentView('detail')
-  }
-
-  const handleCreatePost = () => {
-    setCurrentView('create')
-  }
-
-  const handlePostCreated = (newPost) => {
-    fetchPosts() // Refresh post list after new post is created
-    setCurrentView('list')
-  }
-
-  const handlePostUpdated = (updatedPost) => {
-    setPosts(prevPosts => prevPosts.map(p => p.id === updatedPost.id ? updatedPost : p));
-    setSelectedPost(updatedPost); // Update the selected post in detail view
-  }
-
-  const handleBackToList = () => {
-    fetchPosts(); // Refresh post list when returning to list view
-    setCurrentView('list')
-    setSelectedPost(null)
+  // 添加加載狀態處理
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg">正在加載...</div>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
     return <LoginForm onLogin={handleLogin} />
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 顶部导航栏 */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <h1 
-              className="text-xl font-bold text-gray-900 cursor-pointer"
-              onClick={handleBackToList}
-            >
-              论坛
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600">欢迎，{user ? user.username : '访客'}</span>
-              {user && (
-                <button
-                  onClick={handleLogout}
-                  className="text-sm text-gray-500 hover:text-gray-700"
-                >
-                  退出登录
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 主要内容区域 */}
-      <main>
-        {currentView === 'list' && (
-          <PostList 
-            user={user}
-            posts={posts} // Pass posts from App state
-            fetchPosts={fetchPosts} // Pass fetchPosts to PostList
-            onPostClick={handlePostClick}
-            onCreatePost={handleCreatePost}
-            onPostUpdated={handlePostUpdated} 
-          />
-        )}
-        
-        {currentView === 'detail' && selectedPost && (
-          <PostDetail 
-            post={selectedPost}
-            user={user}
-            onBack={handleBackToList}
-            onPostUpdated={handlePostUpdated} 
-          />
-        )}
-        
-        {currentView === 'create' && (
-          <CreatePost 
-            user={user}
-            onBack={handleBackToList}
-            onPostCreated={handlePostCreated}
-          />
-        )}
-      </main>
-    </div>
-  )
+  // ... 其餘組件邏輯保持不變
 }
 
-export default App
