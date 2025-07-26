@@ -70,3 +70,5 @@ function App() {
   // ... 其餘組件邏輯保持不變
 }
 
+export default App; // 添加這行，將 App 組件作為默認導出
+
