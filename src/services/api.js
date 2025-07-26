@@ -18,6 +18,7 @@ class ApiService {
     try {
       const response = await fetch(url, config);
       
+      // 改進的錯誤處理
       if (!response.ok) {
         let errorMessage;
         const contentType = response.headers.get("content-type");
@@ -33,12 +34,13 @@ class ApiService {
         throw new Error(errorMessage);
       }
 
+      // 只有在響應成功且有內容時才嘗試解析JSON
       const contentType = response.headers.get("content-type");
       if (response.status !== 204 && contentType && contentType.includes("application/json")) {
         const data = await response.json();
         return data;
       } else {
-        return {};
+        return {}; // 或返回 null，取決於後端對204或其他無內容響應的處理
       }
     } catch (error) {
       console.error("API request failed:", error);
@@ -46,25 +48,19 @@ class ApiService {
     }
   }
 
+  // 認證相關
   async login(username, password) {
     const data = await this.request("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
-    
     if (data.token) {
       localStorage.setItem("token", data.token);
-      
-      // 登錄成功後，獲取完整的用戶信息
-      try {
-        const userInfo = await this.getCurrentUser();
-        // 確保返回的 user 對象包含 id
-        return { user: userInfo.user || userInfo };
-      } catch (error) {
-        console.error("Failed to get user info after login:", error);
-        // 如果獲取用戶信息失敗，至少返回基本信息，但這可能導致編輯功能不可用
-        return { user: { username: username, token: data.token } };
-      }
+      // For user login, the backend returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // Assuming the backend /me endpoint returns user details.
+      // For now, we'll return a dummy user object with the username and token.
+      return { user: { username: username, token: data.token } };
     }
     return data;
   }
@@ -81,29 +77,27 @@ class ApiService {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
-    
     if (data.token) {
       localStorage.setItem("token", data.token);
-      
-      try {
-        const userInfo = await this.getCurrentUser();
-        return { user: { ...(userInfo.user || userInfo), role: 'admin' } };
-      } catch (error) {
-        console.error("Failed to get user info after admin login:", error);
-        return { user: { username: username, role: 'admin', token: data.token } };
-      }
+      // For admin login, the backend only returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // For now, we'll return a dummy user object with admin role.
+      // In a real application, you might fetch user details using the token.
+      return { user: { username: username, role: 'admin', token: data.token } };
     }
     return data;
   }
 
   async logout() {
     localStorage.removeItem("token");
+    // No backend call needed for logout with JWT
   }
 
   async getCurrentUser() {
     return this.request("/api/auth/me");
   }
 
+  // 帖子相關
   async getPosts() {
     return this.request("/api/posts");
   }
@@ -138,6 +132,7 @@ class ApiService {
     });
   }
 
+  // 評論相關
   async getPostComments(postId) {
     return this.request(`/api/posts/${postId}/comments`);
   }
