@@ -56,15 +56,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 修復：登錄成功後獲取完整的用戶信息
-      try {
-        const userInfo = await this.getCurrentUser();
-        return { user: userInfo.user };
-      } catch (error) {
-        console.error('Failed to get user info after login:', error);
-        // 如果獲取用戶信息失敗，返回基本信息，但這可能導致編輯功能不可用
-        return { user: { username: username, token: data.token } };
-      }
+      // For user login, the backend returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // Assuming the backend /me endpoint returns user details.
+      // For now, we'll return a dummy user object with the username and token.
+      return { user: { username: username, token: data.token } };
     }
     return data;
   }
@@ -83,15 +79,11 @@ class ApiService {
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
-      // 修復：管理員登錄成功後也獲取完整的用戶信息
-      try {
-        const userInfo = await this.getCurrentUser();
-        return { user: userInfo.user };
-      } catch (error) {
-        console.error('Failed to get admin info after login:', error);
-        // 如果獲取用戶信息失敗，返回基本信息
-        return { user: { username: username, role: 'admin', token: data.token } };
-      }
+      // For admin login, the backend only returns a token. 
+      // We need to return a user object for onLogin to work correctly.
+      // For now, we'll return a dummy user object with admin role.
+      // In a real application, you might fetch user details using the token.
+      return { user: { username: username, role: 'admin', token: data.token } };
     }
     return data;
   }
@@ -166,4 +158,5 @@ class ApiService {
 }
 
 export default new ApiService();
+
 

@@ -11,27 +11,6 @@ function App() {
   const [currentView, setCurrentView] = useState('list') // 'list', 'detail', 'create'
   const [selectedPost, setSelectedPost] = useState(null)
   const [posts, setPosts] = useState([]) // State to hold posts
-  const [isLoading, setIsLoading] = useState(true) // 添加加載狀態
-
-  // 添加：初始化時檢查並獲取用戶信息
-  useEffect(() => {
-    const initializeUser = async () => {
-      const token = localStorage.getItem('token');
-      if (token && !user) {
-        try {
-          const userInfo = await apiService.getCurrentUser();
-          setUser(userInfo.user);
-        } catch (error) {
-          console.error('Failed to get user info on init:', error);
-          // Token 可能已過期，清除它
-          localStorage.removeItem('token');
-        }
-      }
-      setIsLoading(false);
-    };
-
-    initializeUser();
-  }, [user]);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -83,17 +62,6 @@ function App() {
     fetchPosts(); // Refresh post list when returning to list view
     setCurrentView('list')
     setSelectedPost(null)
-  }
-
-  // 添加加載狀態處理
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-lg">正在加載...</div>
-        </div>
-      </div>
-    );
   }
 
   if (!user) {
@@ -162,4 +130,3 @@ function App() {
 }
 
 export default App
-
