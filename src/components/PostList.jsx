@@ -144,9 +144,8 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
       {sortedPosts.length === 0 && (
         <div className="text-center py-12">
           <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">还没有帖子</h3>
-          <p className="text-gray-500 mb-4">成为第一个发帖的人吧！</p>
-          <Button onClick={onCreatePost}>发布第一个帖子</Button>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">正在载入中，不急不急，喝杯茶先☕</h3>
+
         </div>
       )}
     </div>
