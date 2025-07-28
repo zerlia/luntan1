@@ -204,7 +204,7 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
             />
           ) : (
             <div className="prose max-w-none text-gray-700 mb-6">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={{a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />}}>{post.content}</ReactMarkdown>
             </div>
           )}
           
@@ -295,7 +295,7 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
                         </span>
                       </div>
                       <div className="prose max-w-none text-gray-700 mb-3">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{comment.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />}}>{comment.content}</ReactMarkdown>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -333,4 +333,3 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
     </div>
   )
 }
-
