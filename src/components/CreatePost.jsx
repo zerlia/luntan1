@@ -118,7 +118,9 @@ export default function CreatePost({ user, onBack, onPostCreated }) {
                 将以 <span className="font-medium">{user.username}</span> 的身份发布
               </span>
               <div className="space-x-3">
-
+                <Button type="button" variant="outline" onClick={onBack}>
+                  取消
+                </Button>
                 <Button type="submit" disabled={loading} className="flex items-center gap-2">
                   <Send className="w-4 h-4" />
                   {loading ? '发布中...' : '发布帖子'}

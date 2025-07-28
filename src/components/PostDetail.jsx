@@ -18,7 +18,6 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
   const [isEditing, setIsEditing] = useState(false)
   const [editedTitle, setEditedTitle] = useState(initialPost.title)
   const [editedContent, setEditedContent] = useState(initialPost.content)
-  const [isSaving, setIsSaving] = useState(false) // 新增狀態：是否正在保存
 
   useEffect(() => {
     setPost(initialPost);
@@ -85,7 +84,6 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
   }
 
   const handleSavePost = async () => {
-    setIsSaving(true); // 開始保存，設置為true
     try {
       const response = await apiService.updatePost(post.id, editedTitle, editedContent)
       setPost(response.post) // Assuming API returns updated post
@@ -94,8 +92,6 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
     } catch (error) {
       console.error('Error saving post:', error)
       alert(error.message || '保存帖子失敗')
-    } finally {
-      setIsSaving(false); // 保存完成（無論成功或失敗），設置為false
     }
   }
 
@@ -204,7 +200,7 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
             />
           ) : (
             <div className="prose max-w-none text-gray-700 mb-6">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} components={{a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />}}>{post.content}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
             </div>
           )}
           
@@ -232,9 +228,9 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
               </Button>
             )}
             {isAuthor && isEditing && (
-              <Button size="sm" onClick={handleSavePost} className="flex items-center gap-1" disabled={isSaving}>
+              <Button size="sm" onClick={handleSavePost} className="flex items-center gap-1">
                 <Send className="w-4 h-4" />
-                {isSaving ? '保存中...' : '保存'}
+                保存
               </Button>
             )}
             {isAdmin && (
@@ -295,7 +291,7 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
                         </span>
                       </div>
                       <div className="prose max-w-none text-gray-700 mb-3">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />}}>{comment.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{comment.content}</ReactMarkdown>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
