@@ -118,3 +118,72 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Markdown 渲染樣式 */
+.prose h1 {
+  font-size: 2.25em; /* text-4xl */
+  font-weight: 700; /* font-bold */
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose h2 {
+  font-size: 1.875em; /* text-3xl */
+  font-weight: 700;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+.prose h3 {
+  font-size: 1.5em; /* text-2xl */
+  font-weight: 600; /* font-semibold */
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose blockquote {
+  border-left: 4px solid #d1d5db; /* gray-300 */
+  padding-left: 1em;
+  color: #4b5563; /* gray-700 */
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.prose a {
+  color: #2563eb; /* blue-600 */
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #1d4ed8; /* blue-700 */
+}
+
+.prose pre {
+  background-color: #f3f4f6; /* gray-100 */
+  padding: 1em;
+  border-radius: 0.375rem; /* rounded-md */
+  overflow-x: auto;
+}
+
+.prose pre code {
+  color: #1f2937; /* gray-900 */
+  font-family: monospace;
+}
+
+.prose :not(pre) > code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  color: #1f2937;
+}
+
+.prose p {
+  margin-bottom: 1em; /* 確保段落之間有間距 */
+}
+
+.prose {
+  white-space: pre-wrap; /* 保留空白和換行 */
+  word-wrap: break-word;
+}
