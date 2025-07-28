@@ -129,14 +129,17 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return new Intl.DateTimeFormat(\'zh-CN\', {
-      year: \'numeric\',
-      month: \'short\',
-      day: \'numeric\',
-      hour: \'2-digit\',
-      minute: \'2-digit\',
-      timeZone: \'Asia/Shanghai\' // 明確指定時區為東八區
-    }).format(date)点赞数排序评论
+    return new Intl.DateTimeFormat('zh-CN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Shanghai' // 明確指定時區為東八區
+    }).format(date)
+  }
+
+  // 按点赞数排序评论
   const sortedComments = [...comments].sort((a, b) => {
     if (b.likes_count !== a.likes_count) {
       return b.likes_count - a.likes_count
@@ -331,3 +334,4 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
     </div>
   )
 }
+
