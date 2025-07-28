@@ -41,15 +41,14 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+    const date = new Date(date    return new Intl.DateTimeFormat(\'zh-CN\', {
+      year: \'numeric\',
+      month: \'short\',
+      day: \'numeric\',
+      hour: \'2-digit\',
+      minute: \'2-digit\',
+      timeZone: \'Asia/Shanghai\' // 明確指定時區為東八區
+    }).format(date)
 
   // 按点赞数排序
   const sortedPosts = [...posts].sort((a, b) => {
