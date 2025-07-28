@@ -41,8 +41,8 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
-    const date = new Date(date    return date.toLocaleDateString(\'zh-CN\', {
-      year: \'numeric\',
+    const date = new Date(dateString)
+    return date.toLocaleDateString(\'zh-CN\', {
       month: \'short\',
       day: \'numeric\',
       hour: \'2-digit\',
@@ -150,4 +150,3 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
     </div>
   )
 }
-
