@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Button } from '@/components/ui/button.jsx'
-import { Badge } => '@/components/ui/badge.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
 import { Heart, MessageCircle, User, Calendar, Plus } from 'lucide-react'
 import apiService from '../services/api'
 
