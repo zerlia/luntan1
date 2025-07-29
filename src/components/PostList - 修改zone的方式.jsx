@@ -42,15 +42,15 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    // 手動將UTC時間轉換為東八區時間 (UTC+8)
-    date.setHours(date.getHours() + 8)
+    // 強制設定為東八區時間
     return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false // 使用24小時制
+      hour12: false, // 使用24小時制
+      timeZone: 'Asia/Shanghai' // 強制設定為東八區時區
     })
   }
 
@@ -154,5 +154,6 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
     </div>
   )
 }
+
 
 
