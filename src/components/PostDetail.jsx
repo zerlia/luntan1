@@ -129,12 +129,15 @@ export default function PostDetail({ post: initialPost, user, onBack, onPostUpda
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('zh-CN', {
+    // 強制設定為東八區時間
+    return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false, // 使用24小時制
+      timeZone: 'Asia/Shanghai' // 強制設定為東八區時區
     })
   }
 

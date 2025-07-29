@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Button } from '@/components/ui/button.jsx'
-import { Badge } from '@/components/ui/badge.jsx'
+import { Badge } => '@/components/ui/badge.jsx'
 import { Heart, MessageCircle, User, Calendar, Plus } from 'lucide-react'
 import apiService from '../services/api'
 
@@ -42,12 +42,15 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('zh-CN', {
+    // 強制設定為東八區時間
+    return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false, // 使用24小時制
+      timeZone: 'Asia/Shanghai' // 強制設定為東八區時區
     })
   }
 
@@ -151,4 +154,6 @@ export default function PostList({ user, onPostClick, onCreatePost, onPostUpdate
     </div>
   )
 }
+
+
 
